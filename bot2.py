@@ -4,11 +4,12 @@ from twitchio.ext import commands
 from random import randint
 from pathlib import Path
 import time
-
+import json
 
 class Bot(commands.Bot):
     def __init__(self):
         self._cogs = [p.stem for p in Path(".").glob("./cogs/*.py")]
+        
 
         super().__init__(
             irc_token=os.environ['TMI_TOKEN'],
@@ -39,9 +40,10 @@ class Bot(commands.Bot):
         self.channel = self.get_channel(os.environ['CHANNEL'])
         #await self.channel.send("MrDestructoid up and ready to go")
 
+    
     async def event_command_error(self, ctx, err):
-        print(err)
-
+        return
+    
     async def event_error(self, err, data):
         print(err)
 
@@ -57,11 +59,25 @@ class Bot(commands.Bot):
         if ctx.content.lower().startswith('安安'):
             time.sleep(1)
             await ctx.channel.send(f"MrDestructoid 安安 @{ctx.author.name}!")
+
+        with open('customCommands.json','r') as customCommands:
+            cmd = json.load(customCommands)
+        
+        if ctx.content.startswith("!") and not(ctx.content.startswith("!add")):
+            userCommand = ctx.content
+            
+            if cmd.get(ctx.content):
+                msg = cmd[f"{ctx.content}"]
+                await ctx.channel.send(f"{msg}")
+
+
+
         '''
         if ctx.content.lower().startswith('777'):
             time.sleep(1)
             await ctx.channel.send(f"mayshow777 mayshow777 mayshow777 ")
         '''
+
         #if ctx.content.lower().startswith('MrDestructoid'):
         #    await ctx.channel.send(f"MrDestructoid ")
             
@@ -72,6 +88,21 @@ class Bot(commands.Bot):
     async def 誰(self, ctx):
         time.sleep(1)
         await self.channel.send(f"MrDestructoid 我是無情的安安機器人")
+
+    @commands.command(name='add')
+    async def add(self, ctx):
+        holder = ctx.message.raw_data.split('!add ')[1].split(" ")
+        with open('customCommands.json','r') as customCommands:
+            command = json.load(customCommands)
+
+        userCommand = holder[0]
+        userContext = holder[1]
+
+
+        command[f"!{userCommand}"] = userContext
+        
+        with open('customCommands.json','w') as customCommands:
+            json.dump(command, customCommands)
 
     @commands.command(name='吃')
     async def 吃(self, ctx):
