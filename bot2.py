@@ -9,7 +9,8 @@ import json
 class Bot(commands.Bot):
     def __init__(self):
         self._cogs = [p.stem for p in Path(".").glob("./cogs/*.py")]
-        
+        with open('customCommands.json','r') as customCommands:
+            self.cmd = json.load(customCommands)
 
         super().__init__(
             irc_token=os.environ['TMI_TOKEN'],
@@ -91,18 +92,27 @@ class Bot(commands.Bot):
 
     @commands.command(name='add')
     async def add(self, ctx):
-        holder = ctx.message.raw_data.split('!add ')[1].split(" ")
-        with open('customCommands.json','r') as customCommands:
-            command = json.load(customCommands)
 
-        userCommand = holder[0]
-        userContext = holder[1]
+        userCommand = ctx.content.split(' ')[1]
+        userContext = ctx.content.split(' ')[2]
 
-
-        command[f"!{userCommand}"] = userContext
+        self.cmd[f"!{userCommand}"] = userContext
         
         with open('customCommands.json','w') as customCommands:
-            json.dump(command, customCommands)
+            json.dump(self.cmd, customCommands)
+
+    @commands.command(name='remove')
+    async def remove(self, ctx):
+        temp = "!" + ctx.content.split(' ')[1]
+
+        if self.cmd.get(temp):
+            del self.cmd[temp]
+    
+            with open('customCommands.json','w') as customCommands:
+                json.dump(self.cmd, customCommands)
+
+            await ctx.channel.send(f"removed {temp}")
+
 
     @commands.command(name='吃')
     async def 吃(self, ctx):
