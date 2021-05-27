@@ -9,8 +9,7 @@ import json
 class Bot(commands.Bot):
     def __init__(self):
         self._cogs = [p.stem for p in Path(".").glob("./cogs/*.py")]
-        with open('customCommands.json','r') as customCommands:
-            self.cmd = json.load(customCommands)
+        
 
         super().__init__(
             irc_token=os.environ['TMI_TOKEN'],
@@ -61,17 +60,6 @@ class Bot(commands.Bot):
             time.sleep(1)
             await ctx.channel.send(f"MrDestructoid 安安 @{ctx.author.name}!")
 
-        with open('customCommands.json','r') as customCommands:
-            cmd = json.load(customCommands)
-        
-        if ctx.content.startswith("!") and not(ctx.content.startswith("!add")):
-            userCommand = ctx.content
-            
-            if cmd.get(ctx.content):
-                msg = cmd[f"{ctx.content}"]
-                await ctx.channel.send(f"{msg}")
-
-
 
         '''
         if ctx.content.lower().startswith('777'):
@@ -89,31 +77,7 @@ class Bot(commands.Bot):
     async def 誰(self, ctx):
         time.sleep(1)
         await self.channel.send(f"MrDestructoid 我是無情的安安機器人")
-
-    @commands.command(name='add')
-    async def add(self, ctx):
-
-        userCommand = ctx.content.split(' ')[1]
-        userContext = ctx.content.split(' ')[2]
-
-        self.cmd[f"!{userCommand}"] = userContext
         
-        with open('customCommands.json','w') as customCommands:
-            json.dump(self.cmd, customCommands)
-
-    @commands.command(name='remove')
-    async def remove(self, ctx):
-        temp = "!" + ctx.content.split(' ')[1]
-
-        if self.cmd.get(temp):
-            del self.cmd[temp]
-    
-            with open('customCommands.json','w') as customCommands:
-                json.dump(self.cmd, customCommands)
-
-            await ctx.channel.send(f"removed {temp}")
-
-
     @commands.command(name='吃')
     async def 吃(self, ctx):
         time.sleep(1)
