@@ -20,7 +20,7 @@ class Bot(commands.Bot):
         )
     
     def setup(self):
-        print("runing setup...")
+        print("running setup...")
 
         for cog in self._cogs:
             self.load_module(f"cogs.{cog}")

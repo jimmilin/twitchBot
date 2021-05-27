@@ -8,7 +8,12 @@ class CustomCMD:
             self.cmd = json.load(customCommands)
 
 
-    @commands.command(name="add")
+    def main(self):
+        print("hello")
+        #for CustomCMD in self.cmd:
+        #    customCommand(cusCMD, self.cmd[cusCMD])
+        
+    @commands.command(name="+")
     async def add_command(self, ctx):
         context = ctx.content.split(" ")
         split = " "
@@ -23,7 +28,7 @@ class CustomCMD:
             with open('cogs/customCommands.json','w') as customCommands:
                 json.dump(self.cmd, customCommands)
 
-    @commands.command(name="remove")
+    @commands.command(name="-")
     async def remove_command(self, ctx):
         context = ctx.content.split(" ")
         newCommand = "!" + context[1]
@@ -36,18 +41,16 @@ class CustomCMD:
             with open('cogs/customCommands.json','w') as customCommands:
                 json.dump(self.cmd, customCommands)
         
-
-
-
-    '''
-    def customCommand(*.args, **kwargs):
-
-        @commands.command(name=f"{args}")
-        async def command(self, ctx):
-            await ctx.channel.send(args)
+    def customCommand(*args, **kwargs):
+        async def command():
+            print(args)
+            print(kwargs)
 
         return command
-    '''
+    
+    print(customCMD.cmd)
 
 def prepare(bot: commands.Bot) -> None:
-    bot.add_cog(CustomCMD(bot))
+    newCog = CustomCMD(bot)
+    newCog.main()
+    bot.add_cog(newCog)
